@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Rotina de Skincare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0f172a',
+            cardBg: '#1e293b',
+            cardBorder: '#334155',
+            accent: '#ec4899',
+            accentHover: '#db2777',
+            secondary: '#8b5cf6',
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .active-tap:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans antialiased pb-20">
+
+  <!-- Cabeçalho Fixo -->
+  <header
+    class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <div
+        class="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-pink-500/20">
+        ✨
+      </div>
+      <div>
+        <h1 class="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">Glow
+          Routine</h1>
+        <p class="text-[10px] text-slate-400 -mt-1">Pele Mista & Sensível</p>
+      </div>
+    </div>
+    <button id="resetChecklistBtn"
+      class="text-xs text-slate-400 hover:text-pink-400 flex items-center gap-1 bg-slate-800 hover:bg-slate-700 px-2.5 py-1.5 rounded-lg transition active-tap">
+      <i class="fas fa-rotate-right"></i> Resetar Check
+    </button>
+  </header>
+
+  <!-- Navegação por Abas (Inferior em Mobile) -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-4 py-2 flex justify-around items-center">
+    <button onclick="switchTab('daily')" id="tab-daily"
+      class="flex flex-col items-center gap-1 text-pink-400 transition">
+      <i class="fas fa-calendar-day text-lg"></i>
+      <span class="text-[11px] font-medium">Dia a Dia</span>
+    </button>
+    <button onclick="switchTab('spa')" id="tab-spa"
+      class="flex flex-col items-center gap-1 text-slate-400 hover:text-pink-400 transition">
+      <i class="fas fa-spa text-lg"></i>
+      <span class="text-[11px] font-medium">Máscaras/Spa</span>
+    </button>
+    <button onclick="switchTab('weekly')" id="tab-weekly"
+      class="flex flex-col items-center gap-1 text-slate-400 hover:text-pink-400 transition">
+      <i class="fas fa-calendar-week text-lg"></i>
+      <span class="text-[11px] font-medium">Semanal</span>
+    </button>
+    <button onclick="switchTab('products')" id="tab-products"
+      class="flex flex-col items-center gap-1 text-slate-400 hover:text-pink-400 transition">
+      <i class="fas fa-pump-soap text-lg"></i>
+      <span class="text-[11px] font-medium">Produtos</span>
+    </button>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="flex-1 p-4 max-w-md mx-auto w-full">
+
+    <!-- ABA 1: ROTINA DO DIA -->
+    <section id="view-daily" class="space-y-4">
+
+      <!-- Seletor de Dia e Cenário -->
+      <div class="bg-cardBg border border-cardBorder rounded-2xl p-4 shadow-xl space-y-3">
+        <div class="flex justify-between items-center">
+          <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Dia da Semana</label>
+          <span id="currentDayBadge"
+            class="text-xs px-2.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 font-medium border border-pink-500/30">Hoje</span>
+        </div>
+
+        <!-- Botões dos Dias -->
+        <div class="grid grid-cols-7 gap-1" id="dayButtons">
+          <!-- Gerado via JS -->
+        </div>
+
+        <div class="pt-2 border-t border-slate-700/60">
+          <label for="scenarioSelect"
+            class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Cenário / Rotina do
+            Dia</label>
+          <select id="scenarioSelect"
+            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-pink-500 transition">
+            <option value="1">1. Casa (Sem Sol Direto / Sem Make)</option>
+            <option value="2">2. Casa (Com Make Básica - bareMinerals)</option>
+            <option value="3">3. Casa (Com Make Completa)</option>
+            <option value="4">4. Sair (Pouco Sol / Sem Make)</option>
+            <option value="5">5. Sair (Pouco Sol / Com Make Completa)</option>
+            <option value="7">6. Sair (Pouco Sol / Com bareMinerals)</option>
+            <option value="6">7. Viagem / Muita Exposição ao Sol</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Card Resumo do Cenário -->
+      <div id="scenarioBanner"
+        class="p-3.5 rounded-xl bg-gradient-to-r from-purple-900/40 to-pink-900/40 border border-purple-500/30 flex items-start gap-3">
+        <div class="text-2xl mt-0.5" id="scenarioIcon">🏠</div>
+        <div>
+          <h2 class="text-sm font-bold text-slate-100" id="scenarioTitle">Cenário 1: Em Casa sem Make</h2>
+          <p class="text-xs text-slate-300 mt-0.5" id="scenarioDesc">Foco em conforto, hidratação equilibrada e
+            tratamento contínuo sem pesar.</p>
+        </div>
+      </div>
+
+      <!-- Alerta de Tratamento Especial do Dia (Máscaras/Esfoliação) -->
+      <div id="specialDayAlert"
+        class="hidden p-3.5 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-xs text-indigo-200 flex items-start gap-2.5">
+        <i class="fas fa-sparkles text-amber-400 text-sm mt-0.5"></i>
+        <div>
+          <span class="font-bold text-amber-300 block" id="specialDayTitle">Hoje tem cuidado especial!</span>
+          <p id="specialDayDesc">Aplicações especiais programadas para o dia.</p>
+        </div>
+      </div>
+
+      <!-- Passos da Rotina (Manhã) -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-amber-300 flex items-center gap-2">
+            <i class="fas fa-sun text-amber-400"></i> Rotina da Manhã
+          </h3>
+          <span id="morningProgress" class="text-[11px] text-slate-400">0/0</span>
+        </div>
+        <div id="morningSteps" class="space-y-2">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+
+      <!-- Passos da Rotina (Tarde / Fim de Tarde) -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-orange-300 flex items-center gap-2">
+            <i class="fas fa-cloud-sun text-orange-400"></i> Rotina da Tarde (Retoques)
+          </h3>
+          <span id="afternoonProgress" class="text-[11px] text-slate-400">0/0</span>
+        </div>
+        <div id="afternoonSteps" class="space-y-2">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+
+      <!-- Passos da Rotina (Noite) -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-2">
+            <i class="fas fa-moon text-indigo-400"></i> Rotina da Noite
+          </h3>
+          <span id="nightProgress" class="text-[11px] text-slate-400">0/0</span>
+        </div>
+        <div id="nightSteps" class="space-y-2">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+
+      <!-- Dica do Dia -->
+      <div class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs text-slate-300 space-y-1">
+        <span class="font-bold text-pink-400 flex items-center gap-1.5">
+          <i class="fas fa-lightbulb"></i> Lembrete Dermatológico:
+        </span>
+        <p id="scenarioTip" class="leading-relaxed">Sempre estenda seus cremes e protetores solares até o pescoço e
+          colo!</p>
+      </div>
+
+    </section>
+
+    <!-- ABA 2: MÁSCARAS & SPA SEMANAL -->
+    <section id="view-spa" class="hidden space-y-4">
+      <div class="bg-cardBg border border-cardBorder rounded-2xl p-4 shadow-xl space-y-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-100 mb-1 flex items-center gap-2">
+            <i class="fas fa-spa text-pink-400"></i> Cronograma de Máscaras & Ativos
+          </h2>
+          <p class="text-xs text-slate-400">Distribuição semanal inteligente para equilibrar renovação e proteção da
+            barreira:</p>
+        </div>
+
+        <!-- Card Argila Vit C -->
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+          <div class="flex justify-between items-center">
+            <span
+              class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Quarta-feira
+              • Poros & Cravos</span>
+            <span class="text-[10px] text-slate-400">10-15 min</span>
+          </div>
+          <h3 class="text-sm font-bold text-slate-100">Hidrabene Máscara de Argila Vit C</h3>
+          <p class="text-xs text-slate-300">Desobstrui cravos, reduz a oleosidade e ilumina manchas de acne.</p>
+          <p class="text-[11px] text-pink-400 italic bg-pink-950/20 p-2 rounded-lg border border-pink-900/30">⚠️
+            <strong>Atenção:</strong> Enxaguar 100% com água abundante antes do hidratante. O Retinol é desativado nesta
+            noite.</p>
+        </div>
+
+        <!-- Esfoliação com Tônico Renovador -->
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+          <div class="flex justify-between items-center">
+            <span
+              class="text-xs font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">Sexta-feira
+              • Renovação Leve</span>
+          </div>
+          <h3 class="text-sm font-bold text-slate-100">Sallve Tônico Renovador (AHA)</h3>
+          <p class="text-xs text-slate-300">Esfoliação química suave para remover células mortas e suavizar a textura da
+            pele.</p>
+          <p class="text-[11px] text-purple-300 italic bg-purple-950/20 p-2 rounded-lg border border-purple-900/30">✅
+            <strong>Ajuste:</strong> Substitui o Retinol na noite de sexta-feira.</p>
+        </div>
+
+        <!-- Card Antiestresse -->
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+          <div class="flex justify-between items-center">
+            <span
+              class="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">Domingo
+              • Spa & Descanso Total</span>
+            <span class="text-[10px] text-slate-400">15-20 min</span>
+          </div>
+          <h3 class="text-sm font-bold text-slate-100">Hidrabene Máscara Antiestresse</h3>
+          <p class="text-xs text-slate-300">Acalma a pele sensível, devolve o viço e recupera a barreira cutânea.</p>
+          <p class="text-[11px] text-emerald-400 italic bg-emerald-950/20 p-2 rounded-lg border border-emerald-900/30">✨
+            <strong>Ajuste:</strong> Usado após a limpeza (enxaguar). Noite de descanso total de ácidos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: VISÃO SEMANAL -->
+    <section id="view-weekly" class="hidden space-y-4">
+      <div class="bg-cardBg border border-cardBorder rounded-2xl p-4 shadow-xl">
+        <h2 class="text-base font-bold text-slate-100 mb-1">Planejamento Semanal</h2>
+        <p class="text-xs text-slate-400 mb-4">Defina qual cenário você costuma ter em cada dia da semana para organizar
+          sua rotina automaticamente.</p>
+
+        <div id="weeklyPlanner" class="space-y-3">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 4: PRATELEIRA DE PRODUTOS -->
+    <section id="view-products" class="hidden space-y-4">
+      <div class="bg-cardBg border border-cardBorder rounded-2xl p-4 shadow-xl">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-base font-bold text-slate-100">Seus Produtos</h2>
+          <span class="text-xs text-pink-400 bg-pink-500/10 px-2 py-1 rounded-full border border-pink-500/20">Titulares
+            & Backups</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-4">Sua coleção organizada por função com separação técnica estrita por
+          turno.</p>
+
+        <div id="productCategories" class="space-y-4">
+          <!-- Gerado via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal de Detalhes do Produto / Backup -->
+  <div id="backupModal"
+    class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-start">
+        <h3 id="modalTitle" class="font-bold text-slate-100 text-base">Opções de Produtos</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+      <div id="modalContent" class="space-y-3 text-sm">
+        <!-- Gerado via JS -->
+      </div>
+      <button onclick="closeModal()"
+        class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl font-medium text-xs transition">
+        Fechar
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE LÓGICA E DADOS -->
+  <script>
+    const productsData = {
+      eyeDrops: {
+        title: "0. Cuidados Oculares",
+        main: "Colírio (Uso Recomendado)",
+        backups: []
+      },
+      toner: {
+        title: "1. Tônico Equilibrante",
+        main: "Vizzela Oil Control - Tônico Equilibrante",
+        backups: ["Flo Tônico Facial de Aloe Vera + Menta", "Four Elements Bruma Aromática"]
+      },
+      cleanser1: {
+        title: "2. Demaquilante / Limpeza 1",
+        main: "La Roche-Posay Lipikar Cleansing Oil AP+",
+        backups: ["Vizzela Demaquilante Bifásico", "Océane Toalha Demaquilante"]
+      },
+      cleanser2: {
+        title: "3. Gel/Sabonete de Limpeza",
+        main: "Natura Chronos Espuma de Limpeza Suave",
+        backups: ["Alchi Gel de Limpeza Hidratante 2age", "Natura Faces Sabonete Gel", "Vichy Normaderm Gel (Uso esporádico)", "Vichy Normaderm 3 em 1 (Uso esporádico/Pontual)"]
+      },
+      serumDay: {
+        title: "4. Tratamento Diurno (Antioxidante / Oleosidade)",
+        main: "Hidramais Sérum Facial Niacinamida",
+        backups: ["Barbours Beauty Vitamina C Clarify Gel", "Eudora (Niina Secrets) Sérum Vitamina C", "L'Oréal Glycolic-Bright Sérum", "Ganzá Control Pigment"]
+      },
+      serumNight: {
+        title: "5. Tratamento Noturno (Renovação / Antidade)",
+        main: "L'Oréal Paris Revitalift Retinol",
+        backups: ["Barbours Beauty Blemish Care Sérum Vitamina C", "Sallve Tônico Renovador (AHA)", "Hidrabene Sérum Efeito Peeling", "Four Elements Sérum Aromático", "Flo Sérum Copaíba e Bergamota", "Intua Sérum Firmador"]
+      },
+      moisturizerDay: {
+        title: "6. Hidratante Leve (Dia / Sob Make)",
+        main: "Vizzela Water Gel Hidratante",
+        backups: ["Glow Booster da Ella", "Moon Glow Sérum Hydro", "L'Occitane Gel Creme Orquídea"]
+      },
+      moisturizerNight: {
+        title: "7. Hidratante Reparador (Noite / Calmante)",
+        main: "Creamy Skincare Calming Cream",
+        backups: ["Glow Booster da Ella (Booster de Hidratação)", "Barbours Beauty Buriti Skin Relief Cream"]
+      },
+      sunscreen: {
+        title: "8. Protetor Solar Facial",
+        main: "Mantecorp Episol Acqua FPS 60 (Dia a Dia)",
+        backups: ["Sallve Protetor Solar FPS 60 (Resistente)", "Hidrabene Protetor Touch Seco FPS 50"]
+      },
+      tintedSunscreen: {
+        title: "9. Protetor com Cor / Base Leve",
+        main: "bareMinerals Complexion Rescue FPS 30",
+        backups: ["L'Occitane Hidratante Orquídea FPS 30", "L'Oréal Glycolic-Bright Creme Dia FPS 30"]
+      },
+      eyeCare: {
+        title: "10. Área dos Olhos",
+        main: "Vizzela Eye Serum",
+        backups: ["The Skin Soul Anti Dark Circles", "Hidrabene Sérum Concentrado Olhos"]
+      },
+      lipCare: {
+        title: "11. Lábios",
+        main: "Sallve Protetor Solar Labial (Dia)",
+        backups: ["SOS Lábios Lip Balm (Noite)", "Hidrabene Lipstick Morango/Choc"]
+      },
+      extras: {
+        title: "12. Máscaras & Cuidados Especiais",
+        main: "Hidrabene Máscara Antiestresse (Acalmar)",
+        backups: ["Hidrabene Máscara Argila Vit C (Purificar)", "Sallve Bastão Antioleosidade", "Four Elements Bruma Aromática", "Flo Tônico Aloe Vera + Menta"]
+      }
+    };
+
+    const specialWeeklyCare = {
+      qua: {
+        title: "Quarta-feira: Máscara de Argila + Vit C",
+        desc: "Dia de purificar os poros! Aplique a Hidrabene Máscara de Argila Vit C por 10-15 min e enxágue 100%. O Retinol foi desativado hoje.",
+        overrideNightTreatment: { step: "Tratamento Semanal (Poros)", prod: "Hidrabene Máscara Argila Vit C (10-15 min - ENXAGUAR)", key: "extras", isTreatmentStep: true }
+      },
+      sex: {
+        title: "Sexta-feira: Esfoliação Leve (AHA)",
+        desc: "Substituição programada: Tônico Renovador Sallve entra no lugar do Retinol para esfoliação química suave.",
+        overrideNightTreatment: { step: "Tratamento Semanal (AHA)", prod: "Sallve Tônico Renovador (AHA) [SUBSTITUI RETINOL]", key: "serumNight", isTreatmentStep: true }
+      },
+      dom: {
+        title: "Domingo: Spa & Descanso Total",
+        desc: "Noite de descanso ativo de barreira! Aplique a Hidrabene Máscara Antiestresse (15 min - enxaguar). Sem retinol ou ácidos fortes.",
+        overrideNightTreatment: { step: "Tratamento Spa (Acalmar)", prod: "Hidrabene Máscara Antiestresse (15 min - ENXAGUAR)", key: "extras", isTreatmentStep: true }
+      }
+    };
+
+    const stepEyeDropMorning = { step: "Cuidados Oculares", prod: "Aplicação do Colírio (Antes dos cremes do rosto)", key: "eyeDrops", isTreatmentStep: false };
+    const stepEyeDropAfternoon = { step: "Cuidados Oculares", prod: "Aplicação do Colírio (Segunda dose do dia)", key: "eyeDrops", isTreatmentStep: false };
+    const stepTonerMorning = { step: "Tonificação", prod: productsData.toner.main, key: "toner", isTreatmentStep: false };
+    const stepEyeCareMorning = { step: "Área dos Olhos", prod: productsData.eyeCare.main, key: "eyeCare", isTreatmentStep: false };
+    const stepEyeCareNight = { step: "Área dos Olhos", prod: productsData.eyeCare.main, key: "eyeCare", isTreatmentStep: false };
+
+    const scenarios = {
+      1: {
+        title: "1. Em Casa (Sem Sol Direto / Sem Make)",
+        icon: "🏠",
+        desc: "Foco em conforto, hidratação equilibrada e tratamento contínuo sem pesar.",
+        tip: "Lembre-se de estender os produtos para o pescoço e colo em todos os passos!",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Tratamento", prod: productsData.serumDay.main, key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Hidratação", prod: productsData.moisturizerDay.main, key: "moisturizerDay", isTreatmentStep: false },
+          { step: "Lábios", prod: productsData.lipCare.main, key: "lipCare", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Hidratação Lábios", prod: "Reaplicar Sallve Protetor Labial / Lip Balm", key: "lipCare", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Tratamento Noturno", prod: productsData.serumNight.main, key: "serumNight", isTreatmentStep: true },
+          { step: "Hidratação Calmante", prod: productsData.moisturizerNight.main, key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight,
+          { step: "Lábios", prod: "SOS Lábios Lip Balm", key: "lipCare", isTreatmentStep: false }
+        ]
+      },
+      2: {
+        title: "2. Em Casa (Com Make Básica - bareMinerals)",
+        icon: "✨",
+        desc: "Preparação leve e remoção eficiente do protetor mineral à noite.",
+        tip: "O protetor mineral da bareMinerals requer remoção com Cleansing Oil à noite.",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Tratamento", prod: productsData.serumDay.main, key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Make & Proteção", prod: productsData.tintedSunscreen.main, key: "tintedSunscreen", isTreatmentStep: false },
+          { step: "Lábios", prod: productsData.lipCare.main, key: "lipCare", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Controle Oleosidade", prod: "Sallve Bastão Antioleosidade (Se necessário)", key: "extras", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Demaquilagem (Passo 1)", prod: productsData.cleanser1.main, key: "cleanser1", isTreatmentStep: false },
+          { step: "Limpeza Suave (Passo 2)", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Tratamento Noturno", prod: productsData.serumNight.main, key: "serumNight", isTreatmentStep: true },
+          { step: "Hidratação Calmante", prod: productsData.moisturizerNight.main, key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight,
+          { step: "Lábios", prod: "SOS Lábios Lip Balm", key: "lipCare", isTreatmentStep: false }
+        ]
+      },
+      3: {
+        title: "3. Em Casa (Com Make Completa)",
+        icon: "💄",
+        desc: "Controle de brilho sob a maquiagem e descanso de barreira à noite.",
+        tip: "Peles sensíveis recebem descanso ativo de retinol nesta noite pós-make pesada.",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Tratamento Matificante", prod: productsData.serumDay.main, key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Hidratação Pré-Make", prod: productsData.moisturizerDay.main, key: "moisturizerDay", isTreatmentStep: false },
+          { step: "Sua Maquiagem Completa", prod: "Maquiagem de sua preferência", key: "none", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Retoque Matificante", prod: "Sallve Bastão Antioleosidade na Zona T", key: "extras", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Demaquilagem (Passo 1)", prod: productsData.cleanser1.main, key: "cleanser1", isTreatmentStep: false },
+          { step: "Limpeza Suave (Passo 2)", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Descanso de Barreira", prod: "Creamy Calming Cream [SEM RETINOL]", key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight
+        ]
+      },
+      4: {
+        title: "4. Sair de Casa (Pouco Sol / Sem Make)",
+        icon: "🌿",
+        desc: "Proteção UV eficiente e ação antioxidante contra poluição.",
+        tip: "Aplique o protetor solar no rosto, pescoço e colo cerca de 15 minutos antes de sair.",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Antioxidante", prod: "Barbours Clarify Gel / Niacinamida", key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Proteção Solar (Pescoço/Colo)", prod: productsData.sunscreen.main, key: "sunscreen", isTreatmentStep: false },
+          { step: "Protetor Labial", prod: productsData.lipCare.main, key: "lipCare", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Reaplicar Proteção", prod: "Mantecorp Episol Acqua (Reaplicação)", key: "sunscreen", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Remoção de Protetor (Passo 1)", prod: productsData.cleanser1.main, key: "cleanser1", isTreatmentStep: false },
+          { step: "Limpeza Suave (Passo 2)", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Tratamento Noturno", prod: productsData.serumNight.main, key: "serumNight", isTreatmentStep: true },
+          { step: "Hidratação Calmante", prod: productsData.moisturizerNight.main, key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight
+        ]
+      },
+      5: {
+        title: "5. Sair de Casa (Pouco Sol / Com Make Completa)",
+        icon: "🏙️",
+        desc: "Camadas leves para durabilidade e proteção solar reforçada.",
+        tip: "Utilize o Sallve Bastão Antioleosidade na zona T ao longo do dia.",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Tratamento Antioxidante", prod: productsData.serumDay.main, key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Proteção Solar Fluida", prod: productsData.sunscreen.main, key: "sunscreen", isTreatmentStep: false },
+          { step: "Maquiagem Completa", prod: "Sua maquiagem habitual de sair", key: "none", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Retoque Antioleosidade", prod: "Sallve Bastão Antioleosidade", key: "extras", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Demaquilagem (Passo 1)", prod: productsData.cleanser1.main, key: "cleanser1", isTreatmentStep: false },
+          { step: "Limpeza Suave (Passo 2)", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Tratamento Noturno", prod: productsData.serumNight.main, key: "serumNight", isTreatmentStep: true },
+          { step: "Hidratação Calmante", prod: productsData.moisturizerNight.main, key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight
+        ]
+      },
+      7: {
+        title: "6. Sair de Casa (Pouco Sol / Com bareMinerals)",
+        icon: "🌸",
+        desc: "Proteção dupla contra manchas: Protetor fluido + bareMinerals por cima.",
+        tip: "O protetor Episol garante a barreira contra manchas, enquanto o bareMinerals uniformiza o tom.",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Tratamento Antioxidante", prod: productsData.serumDay.main, key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Proteção Solar Base", prod: productsData.sunscreen.main, key: "sunscreen", isTreatmentStep: false },
+          { step: "Make com Cor", prod: productsData.tintedSunscreen.main, key: "tintedSunscreen", isTreatmentStep: false },
+          { step: "Proteção Labial", prod: productsData.lipCare.main, key: "lipCare", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Retoque Labial / Brilho", prod: "Sallve Protetor Labial / Bastão Antioleosidade", key: "lipCare", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Demaquilagem (Passo 1)", prod: productsData.cleanser1.main, key: "cleanser1", isTreatmentStep: false },
+          { step: "Limpeza Suave (Passo 2)", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Tratamento Noturno", prod: productsData.serumNight.main, key: "serumNight", isTreatmentStep: true },
+          { step: "Hidratação Calmante", prod: productsData.moisturizerNight.main, key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight
+        ]
+      },
+      6: {
+        title: "7. Viagem / Muita Exposição ao Sol",
+        icon: "☀️",
+        desc: "Alta proteção solar, prevenção de manchas e reparação pós-sol.",
+        tip: "PAUSE retinóides e ácidos fortes! A pele exposta ao sol fica vulnerável a manchas se usada com ácidos.",
+        morning: [
+          stepEyeDropMorning,
+          { step: "Higienização Suave", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          stepTonerMorning,
+          { step: "Antioxidante Anti-Manchas", prod: productsData.serumDay.main, key: "serumDay", isTreatmentStep: false },
+          stepEyeCareMorning,
+          { step: "Protetor Alta Proteção", prod: "Sallve FPS 60 ou Hidrabene Touch Seco", key: "sunscreen", isTreatmentStep: false },
+          { step: "Proteção Labial", prod: productsData.lipCare.main, key: "lipCare", isTreatmentStep: false }
+        ],
+        afternoon: [
+          stepEyeDropAfternoon,
+          { step: "Reaplicação Protetor Solar", prod: "Reaplicar Sallve FPS 60 a cada 2h", key: "sunscreen", isTreatmentStep: false },
+          { step: "Refrescar Pele", prod: "Four Elements Bruma Aromática", key: "extras", isTreatmentStep: false }
+        ],
+        night: [
+          { step: "Remoção de Filtros (Passo 1)", prod: productsData.cleanser1.main, key: "cleanser1", isTreatmentStep: false },
+          { step: "Limpeza Suave (Passo 2)", prod: productsData.cleanser2.main, key: "cleanser2", isTreatmentStep: false },
+          { step: "Acalmar & Reparar (SEM ÁCIDOS)", prod: "Creamy Calming Cream (Camada generosa)", key: "moisturizerNight", isTreatmentStep: false },
+          stepEyeCareNight,
+          { step: "Extra Pós-Sol", prod: "Flo Tônico Aloe Vera ou Four Elements Bruma", key: "extras", isTreatmentStep: false }
+        ]
+      }
+    };
+
+    const daysOfWeek = [
+      { id: 'seg', short: 'Seg', name: 'Segunda-feira', defaultScenario: 1 },
+      { id: 'ter', short: 'Ter', name: 'Terça-feira', defaultScenario: 4 },
+      { id: 'qua', short: 'Qua', name: 'Quarta-feira', defaultScenario: 2 },
+      { id: 'qui', short: 'Qui', name: 'Quinta-feira', defaultScenario: 7 },
+      { id: 'sex', short: 'Sex', name: 'Sexta-feira', defaultScenario: 5 },
+      { id: 'sab', short: 'Sáb', name: 'Sábado', defaultScenario: 3 },
+      { id: 'dom', short: 'Dom', name: 'Domingo', defaultScenario: 1 }
+    ];
+
+    let selectedDay = 'seg';
+    let weeklySchedule = JSON.parse(localStorage.getItem('skincare_weekly')) || {
+      seg: 1, ter: 4, qua: 2, qui: 7, sex: 5, sab: 3, dom: 1
+    };
+    let checkedSteps = JSON.parse(localStorage.getItem('skincare_checks')) || {};
+
+    window.onload = function () {
+      const todayIndex = (new Date().getDay() + 6) % 7;
+      selectedDay = daysOfWeek[todayIndex].id;
+
+      renderDayButtons();
+      renderWeeklyPlanner();
+      renderProductCategories();
+      loadDayRoutine();
+
+      document.getElementById('scenarioSelect').addEventListener('change', (e) => {
+        const scenarioId = parseInt(e.target.value, 10);
+        weeklySchedule[selectedDay] = scenarioId;
+        saveWeeklySchedule();
+        loadDayRoutine();
+      });
+
+      document.getElementById('resetChecklistBtn').addEventListener('click', () => {
+        checkedSteps = {};
+        localStorage.removeItem('skincare_checks');
+        loadDayRoutine();
+      });
+    };
+
+    function switchTab(tab) {
+      ['daily', 'spa', 'weekly', 'products'].forEach((t) => {
+        const view = document.getElementById(`view-${t}`);
+        if (view) view.classList.add('hidden');
+
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) {
+          btn.classList.remove('text-pink-400');
+          btn.classList.add('text-slate-400');
+        }
+      });
+
+      const currentView = document.getElementById(`view-${tab}`);
+      if (currentView) currentView.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.add('text-pink-400');
+        activeBtn.classList.remove('text-slate-400');
+      }
+    }
+
+    function renderDayButtons() {
+      const container = document.getElementById('dayButtons');
+      container.innerHTML = daysOfWeek.map(day => {
+        const isSelected = day.id === selectedDay;
+        const hasSpecial = !!specialWeeklyCare[day.id];
+
+        return `
+          <button onclick="selectDay('${day.id}')" class="relative flex flex-col items-center py-2 px-1 rounded-xl transition active-tap ${isSelected ? 'bg-pink-500 text-white font-bold shadow-lg shadow-pink-500/30' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}">
+            <span class="text-[10px] uppercase tracking-wider opacity-80">${day.short}</span>
+            ${hasSpecial ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 absolute top-1 right-1"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectDay(dayId) {
+      selectedDay = dayId;
+      renderDayButtons();
+      const dayObj = daysOfWeek.find(d => d.id === dayId);
+      document.getElementById('currentDayBadge').innerText = dayObj.name;
+      loadDayRoutine();
+    }
+
+    function loadDayRoutine() {
+      const scenarioId = weeklySchedule[selectedDay] || 1;
+      document.getElementById('scenarioSelect').value = scenarioId;
+
+      const sc = scenarios[scenarioId];
+      document.getElementById('scenarioIcon').innerText = sc.icon;
+      document.getElementById('scenarioTitle').innerText = sc.title;
+      document.getElementById('scenarioDesc').innerText = sc.desc;
+      document.getElementById('scenarioTip').innerText = sc.tip;
+
+      const special = specialWeeklyCare[selectedDay];
+      const alertBox = document.getElementById('specialDayAlert');
+      if (special) {
+        alertBox.classList.remove('hidden');
+        document.getElementById('specialDayTitle').innerText = special.title;
+        document.getElementById('specialDayDesc').innerText = special.desc;
+      } else {
+        alertBox.classList.add('hidden');
+      }
+
+      let nightSteps = [...sc.night];
+      if (special && special.overrideNightTreatment) {
+        const treatmentIdx = nightSteps.findIndex(step => step.isTreatmentStep === true);
+        if (treatmentIdx !== -1) {
+          nightSteps[treatmentIdx] = special.overrideNightTreatment;
+        } else {
+          const lastCleanserIdx = nightSteps.reduce((acc, step, idx) => step.key.includes('cleanser') ? idx : acc, -1);
+          const insertIdx = lastCleanserIdx !== -1 ? lastCleanserIdx + 1 : 1;
+          nightSteps.splice(insertIdx, 0, special.overrideNightTreatment);
+        }
+      }
+
+      renderSteps('morningSteps', sc.morning, 'M');
+      renderSteps('afternoonSteps', sc.afternoon, 'A');
+      renderSteps('nightSteps', nightSteps, 'N');
+      updateProgress(sc.morning.length, sc.afternoon.length, nightSteps.length);
+    }
+
+    function renderSteps(containerId, steps, prefix) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = steps.map((s, index) => {
+        const checkKey = `${selectedDay}_${prefix}_${index}`;
+        const isChecked = !!checkedSteps[checkKey];
+        const hasBackup = s.key !== 'none' && productsData[s.key] && productsData[s.key].backups.length > 0;
+
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-cardBg border ${isChecked ? 'border-pink-500/40 bg-pink-950/10' : 'border-cardBorder'} transition">
+            <div class="flex items-center gap-3 cursor-pointer flex-1" onclick="toggleCheck('${checkKey}')">
+              <div class="w-5 h-5 rounded-md border flex items-center justify-center transition ${isChecked ? 'bg-pink-500 border-pink-500 text-white' : 'border-slate-600 bg-slate-800'}">
+                ${isChecked ? '<i class="fas fa-check text-xs"></i>' : ''}
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-400">${s.step}</p>
+                <p class="text-xs font-medium ${isChecked ? 'line-through text-slate-500' : 'text-slate-100'}">${s.prod}</p>
+              </div>
+            </div>
+            ${hasBackup ? `
+              <button onclick="openModal('${s.key}')" class="text-[11px] text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/20 px-2 py-1 rounded-lg ml-2 active-tap transition">
+                <i class="fas fa-layer-group text-[10px] mr-1"></i>Backups
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleCheck(key) {
+      checkedSteps[key] = !checkedSteps[key];
+      localStorage.setItem('skincare_checks', JSON.stringify(checkedSteps));
+      loadDayRoutine();
+    }
+
+    function updateProgress(mTotal, aTotal, nTotal) {
+      const mChecked = Array.from({ length: mTotal }).filter((_, i) => checkedSteps[`${selectedDay}_M_${i}`]).length;
+      document.getElementById('morningProgress').innerText = `${mChecked}/${mTotal}`;
+
+      const aChecked = Array.from({ length: aTotal }).filter((_, i) => checkedSteps[`${selectedDay}_A_${i}`]).length;
+      document.getElementById('afternoonProgress').innerText = `${aChecked}/${aTotal}`;
+
+      const nChecked = Array.from({ length: nTotal }).filter((_, i) => checkedSteps[`${selectedDay}_N_${i}`]).length;
+      document.getElementById('nightProgress').innerText = `${nChecked}/${nTotal}`;
+    }
+
+    function renderWeeklyPlanner() {
+      const container = document.getElementById('weeklyPlanner');
+      container.innerHTML = daysOfWeek.map(day => {
+        const currentScenario = weeklySchedule[day.id] || day.defaultScenario;
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+            <span class="text-xs font-bold text-slate-200 w-24">${day.name}</span>
+            <select onchange="updateWeeklyDay('${day.id}', this.value)" class="bg-cardBg border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-pink-300 focus:outline-none flex-1 max-w-[200px]">
+              ${Object.keys(scenarios).map(id => `
+                <option value="${id}" ${parseInt(id, 10) === currentScenario ? 'selected' : ''}>
+                  ${scenarios[id].icon} ${scenarios[id].title.split('.')[1]}
+                </option>
+              `).join('')}
+            </select>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateWeeklyDay(dayId, scenarioId) {
+      weeklySchedule[dayId] = parseInt(scenarioId, 10);
+      saveWeeklySchedule();
+      if (dayId === selectedDay) {
+        loadDayRoutine();
+      }
+    }
+
+    function saveWeeklySchedule() {
+      localStorage.setItem('skincare_weekly', JSON.stringify(weeklySchedule));
+    }
+
+    function renderProductCategories(){
+      const container = document.getElementById('productCategories');
+      container.innerHTML = Object.keys(productsData).map(key => {
+        const cat = productsData[key];
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+            <h3 class="text-xs font-bold text-pink-400 uppercase tracking-wider">${cat.title}</h3>
+            <div class="text-xs text-slate-100 font-medium flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">★ Titular:</span> ${cat.main}
+            </div>
+            ${cat.backups.length > 0 ? `
+              <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+                <span class="font-semibold text-slate-500">Backups:</span> ${cat.backups.join(' • ')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openModal(key) {
+      const item = productsData[key];
+      if (!item) return;
+
+      document.getElementById('modalTitle').innerText = item.title;
+      const content = document.getElementById('modalContent');
+
+      content.innerHTML = `
+        <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
+          <p class="text-[10px] uppercase font-bold text-emerald-400">Produto Principal (Titular)</p>
+          <p class="font-semibold text-slate-100 mt-0.5">${item.main}</p>
+        </div>
+        ${item.backups.length > 0 ? `
+        <div>
+          <p class="text-[10px] uppercase font-bold text-slate-400 mb-1">Opções de Reserva (Backups)</p>
+          <ul class="space-y-1.5">
+            ${item.backups.map(b => `
+              <li class="p-2.5 rounded-lg bg-slate-800 border border-slate-700/80 text-xs text-slate-300 flex items-center gap-2">
+                <i class="fas fa-box text-slate-500 text-[10px]"></i> ${b}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        ` : ''}
+      `;
+
+      document.getElementById('backupModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('backupModal').classList.add('hidden');
+    }
+  </script>
+</body>
+
+</html>
